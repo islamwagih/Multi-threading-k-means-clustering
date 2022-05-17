@@ -25,7 +25,8 @@ double eclidDis(Point p, Centroid c)
 void cpy(Centroid* src, Centroid* dest, int limit)
 {
 	int i;
-	for(i=0;i<limit;i++){
+	for(i=0;i<limit;i++)
+	{
 		dest[i].x = src[i].x;
 		dest[i].y = src[i].y;
 	}
@@ -35,7 +36,8 @@ void cpy(Centroid* src, Centroid* dest, int limit)
 bool dComp(double x, double y)
 {
 	double diff = x-y;
-	if(diff > 0.001 || diff < -0.001){
+	if(diff > 0.001 || diff < -0.001)
+	{
 		return false;
 	}
 	return true;
@@ -44,11 +46,14 @@ bool dComp(double x, double y)
 bool equal(Centroid* c1, Centroid* c2, int limit)
 {
 	int i;
-	for(i=0;i<limit;i++){
-		if(!dComp(c1[i].x, c2[i].x)){
+	for(i=0;i<limit;i++)
+	{
+		if(!dComp(c1[i].x, c2[i].x))
+		{
 			return false;
 		}
-		if(!dComp(c1[i].y, c2[i].y)){
+		if(!dComp(c1[i].y, c2[i].y))
+		{
 			return false;
 		}
 	}
@@ -68,12 +73,12 @@ int main ()
 	maxPoint.x = maxPoint.y = -1e9;
 	minPoint.x = minPoint.y = 1e9;
 
-    #pragma omp parallel shared(centroidsNum) 
+	#pragma omp parallel shared(centroidsNum) 
 	{
 		centroidsNum = omp_get_num_threads();
 	}	 
 
-    /* Read The data file  */	
+        /* Read The data file  */	
 	FILE* my_file = fopen("list.txt", "r");
 
 	if(my_file)
@@ -96,7 +101,7 @@ int main ()
 	maxPoint.x += 10;
 	maxPoint.y += 10;
 	
-   /*Initiate 2 random numbers for each thread/cluster (x , y)*/
+       /*Initiate 2 random numbers for each thread/cluster (x , y)*/
 
 	srand(time(NULL));	
 	Centroid *centroids =  malloc (centroidsNum * sizeof(Centroid));
@@ -106,10 +111,10 @@ int main ()
 		int base = maxPoint.x - minPoint.x + 1;
 		centroids[i].x = (rand()%base) + minPoint.x;
 		centroids[i].y = (rand()%base) + minPoint.y;
-        //printf("centroid %d : %lf, %lf ", i+1, centroids[i].x, centroids[i].y);
+                //printf("centroid %d : %lf, %lf ", i+1, centroids[i].x, centroids[i].y);
 	}
 
-    //printf("\n");
+        //printf("\n");
 	
 
 	Centroid *oldCentroids =  malloc (centroidsNum * sizeof(Centroid));
@@ -118,8 +123,8 @@ int main ()
 	while(!equal(oldCentroids, centroids, centroidsNum))
 	{
 		cpy(centroids, oldCentroids, centroidsNum);
-	    /*Calculate the distance between each point and cluster centroid.*/
-        #pragma omp parallel shared(points , centroidsNum , size) private(i)
+	        /*Calculate the distance between each point and cluster centroid.*/
+                #pragma omp parallel shared(points , centroidsNum , size) private(i)
 		{
 			id = omp_get_thread_num();
 			
@@ -129,7 +134,7 @@ int main ()
 			}
 		}
 		
-	    /*Filter each point distances depending on minimum value*/	
+	        /*Filter each point distances depending on minimum value*/	
 		for (i = 0; i < size ; i ++)
 		{
 			double currMin = 1e9;
@@ -146,8 +151,8 @@ int main ()
 
 		double sumX, sumY;
 		int count;
-	    /*Calculate the mean for each cluster as new cluster centroid */
-	    #pragma omp parallel shared(points , centroidsNum , size) private(i, sumX, sumY, count)
+	        /*Calculate the mean for each cluster as new cluster centroid */
+	        #pragma omp parallel shared(points , centroidsNum , size) private(i, sumX, sumY, count)
 		{
 			id = omp_get_thread_num();
 			sumX = 0.0, sumY = 0.0;
@@ -191,12 +196,13 @@ int main ()
 	}
 	
 	//printf("cents %d\n", centroidsNum);
+
 	/*
 	for(i = 0; i < centroidsNum; i++)
 	{
-        printf("centroid %d : %lf, %lf ", i+1, centroids[i].x, centroids[i].y);
-    }
+            printf("centroid %d : %lf, %lf ", i+1, centroids[i].x, centroids[i].y);
+        }
    	 printf("\n");
-    */
+        */
 
 }
