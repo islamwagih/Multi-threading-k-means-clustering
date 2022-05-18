@@ -195,14 +195,6 @@ int main ()
 		}	
 	}
 	
-	//printf("cents %d\n", centroidsNum);
-
-	/*
-	for(i = 0; i < centroidsNum; i++)
-	{
-            printf("centroid %d : %lf, %lf ", i+1, centroids[i].x, centroids[i].y);
-        }
-   	 printf("\n");
-        */
+	free(centroids);
 
 }
